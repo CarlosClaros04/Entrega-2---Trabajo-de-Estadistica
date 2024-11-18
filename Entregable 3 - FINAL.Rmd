@@ -1,0 +1,471 @@
+---
+title: "Gráficos - Determinantes de la corrupción un estudio global"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+
+
+```{r setup, include=FALSE}
+library(flexdashboard)
+```
+
+Grafico descriptivo de la variable dependiente {data-icon="fa-signal"}
+===================================== 
+
+
+```{r}
+# Cargar librerías necesarias
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+# Cargar los datos
+library(rio)
+base = import("Data_paises2022_continentes.xlsx")
+
+
+# Filtrar los datos eliminando filas con valores NA en las columnas relevantes
+base_clean <- base %>%
+  drop_na(`Corruption (0-100)`, Pol_stability, Gov_effectiveness, Continent)
+
+
+hist(base_clean$`Corruption (0-100)`,
+     main = "Histograma del Índice de Corrupción (IPC)",
+     xlab = "Índice de Corrupción (0-100)",
+     col = "blue",
+     border = "black")
+```
+    
+Gráfico 1 {data-icon="fa-table"}
+=====================================     
+
+
+```{r}
+ggplot(base_clean, aes(x = `Corruption (0-100)`, y = Gov_effectiveness)) +
+  geom_point() +
+  labs(title = "IPC vs Eficacia del Gobierno por Continente",
+       x = "Índice de Percepción de Corrupción (IPC)", y = "Eficiencia del Gobierno") +
+  theme_minimal() +
+  scale_color_brewer(palette = "Set1")
+
+```
+    
+
+Gráfico 2 {data-icon="fa-table"}
+=====================================     
+
+
+
+```{r}
+# Cargar librerías necesarias
+#library(ggplot2)
+library(dplyr)
+library(lsr)
+# Cargar los datos
+#base <- readxl::read_excel("Data_paises2022_continentes.xlsx")
+
+# Calcular el promedio y la desviación estándar de Accountability por continente
+base_summary <- base %>%
+  drop_na(`Corruption (0-100)`, Continent) %>%
+  group_by(Continent) %>%
+  summarise(Media = mean(`Corruption (0-100)`, na.rm = TRUE),
+            mini = ciMean(`Corruption (0-100)`, na.rm = TRUE)[1],
+            maxi = ciMean(`Corruption (0-100)`, na.rm = TRUE)[2],
+  )
+
+
+# grafico
+#library(ggplot2)
+#library(dplyr)
+library(ggthemes)
+
+g3 <- ggplot(base_summary, aes(x = Continent, y = Media, fill = Continent)) +
+  #geom_bar(stat = "identity", color = "black", show.legend = FALSE) +
+  geom_errorbar(aes(ymin = mini, 
+                    ymax = maxi), 
+                width = 0.2) +
+  geom_text(aes(label = round(Media, 2)), 
+            vjust = -0.5, size = 4, color = "black") +
+  labs(
+    title = "Indice de Corrupcion por continente",
+    x = "Continente",
+    y = "Corrupcion"
+  ) +
+  theme_fivethirtyeight() +
+  scale_fill_fivethirtyeight()
+
+g3
+```
+
+Gráfico 3 {data-icon="fa-table"}
+=====================================     
+
+```{r}
+# Cargar librerías necesarias
+library(ggplot2)
+
+
+ggplot(base_clean, aes(x = Inequality, y = `Corruption (0-100)`)) +
+  geom_point(size = 3) +
+    geom_smooth(method="lm", se = T, colour="red")+
+  labs(title = "IPC vs Desigualdad",
+       y = "Índice de Percepción de Corrupción (CPI)", x = "Desigualdad") +
+  theme_minimal() +
+  scale_color_brewer(palette = "Set1")
+
+```
+
+Gráfico 4 {data-icon="fa-table"}
+=====================================    
+
+```{r}
+# Crear gráfico de dispersión entre desigualdad y estabilidad política
+ggplot(base, aes(x = `Corruption (0-100)`, y = Rule_law)) +
+  geom_point(size = 3) +
+  labs(
+    title = "IPC vs Estado de Derecho",
+    x = " Indice de Percepción de Corrupción (IPC)",
+    y = "Estado de Derecho"
+  ) +
+  theme_minimal() +
+  scale_color_brewer(palette = "Set1")
+```
+
+
+Gráfico 5 {data-icon="fa-table"}
+=====================================   
+
+
+
+```{r}
+# Crear gráfico de dispersión entre desigualdad y estabilidad política
+ggplot(base, aes(x = `Corruption (0-100)`, y = Accountability)) +
+  geom_point(size = 3) +
+  labs(
+    title = "IPC vs Voz y Rendición de Cuentas",
+    x = "Indice de Percepción de Corrupción (IPC)",
+    y = "Voz y Rendición de Cuentas (Accountability)"
+  ) +
+  theme_minimal() +
+  scale_color_brewer(palette = "Set1")
+```
+
+Gráfico 6 {data-icon="fa-table"}
+=====================================   
+
+
+```{r}
+# Crear gráfico de dispersión entre desigualdad y estabilidad política
+ggplot(base, aes(x = `Corruption (0-100)`, y = Pol_stability)) +
+  geom_point(size = 3) +
+  labs(
+    title = "IPC vs Estabilidad Politica",
+    x = "Indice de Percepción de Corrupción (IPC)",
+    y = "Estabilidad Politica (Pol_stability)"
+  ) +
+  theme_minimal() +
+  scale_color_brewer(palette = "Set1")
+```
+
+Gráfico 7 {data-icon="fa-table"}
+=====================================   
+
+
+```{r}
+# Crear gráfico de dispersión entre desigualdad y estabilidad política
+ggplot(base, aes(x = `Corruption (0-100)`, y =Regulatory_quality)) +
+  geom_point(size = 3) +
+  labs(
+    title = "IPC vs Calidad de los Organismos Reguladores",
+    x = "Indice de Percepción de Corrupción (IPC)",
+    y = "Calidad de los Organismos reguladores (Regulatory_quality)"
+  ) +
+  theme_minimal() +
+  scale_color_brewer(palette = "Set1")
+```
+
+Gráfico 8 {data-icon="fa-table"}
+=====================================   
+
+```{r}
+ggplot(base_clean, aes(x = Gov_effectiveness , y = `Corruption (0-100)`)) +
+  geom_point() +
+  geom_smooth(method="lm", se = T, colour="red")+
+  labs(title = "IPC vs Eficacia del Gobierno por Continente",
+       x = "Índice de Percepción de Corrupción (IPC)", y = "Eficiencia del Gobierno") +
+  theme_minimal() +
+  scale_color_brewer(palette = "Set1")
+
+```
+
+
+Test de Shapiro {data-icon="fa-table"}
+=====================================   
+
+
+```{r}
+# ANALIZAR NORMALIDAD
+# DEBEMOS ELEGIR LA PRUEBA CORRECTA
+# SI n >= 30 SERA KOLMOGOROV (LILLIE)
+# SI n < 30  SERA SHAPIRO
+
+# EN ESTA MUETRA SE OBSERVBA QUE LA MUESTRA ES DE TAMAÑO  n = 173 > 30   _>>>>> KOLMOGOROV (LILLIE)
+```
+
+
+```{r}
+# PRUEBA DE NORMALIDAD PARA CADA VARIABLE
+# caso 1 `Corruption (0-100)`
+
+# Ho NORMALIDAD
+# H1 NO NORMALIDAD
+
+library(nortest)
+
+lillie.test(base_clean$`Corruption (0-100)`)
+lillie.test(base_clean$Gov_effectiveness)
+# como ya hay por lo menos una variable no normal, la correlacion es con spearman
+```
+```{r}
+# Ho NORMALIDAD
+# H1 NO NORMALIDAD
+shapiro.test(base_clean$`Corruption (0-100)`)
+shapiro.test(base_clean$Gov_effectiveness)
+```
+
+Correlación {data-icon="fa-table"}
+=====================================   
+
+```{r}
+cor.test(base_clean$Regulatory_quality,base_clean$`Corruption (0-100)`)
+
+# Ho r = o      (no correlacion)
+# H1 r =/= 0    (si correlacion)  ->  analizar coeficiente
+cor.test(base_clean$Inequality,base_clean$`Corruption (0-100)`)
+
+# Ho r = o      (no correlacion)
+# H1 r =/= 0    (si correlacion)  ->  analizar coeficiente
+cor.test(base_clean$Rule_law,base_clean$`Corruption (0-100)`)
+
+cor.test(base_clean$Gov_effectiveness,base_clean$`Corruption (0-100)`, method = c("spearman"))
+
+cor.test(base_clean$`Corruption (0-100)`,base_clean$Gov_effectiveness) # pearson
+```
+
+
+REGRESIÓN MÚLTIPLE {data-icon="fa-table"}
+=====================================   
+
+```{r}
+# REGRESION LINEAL MULYIPLE   Y ~ X1 + X2 + X3.....
+MODELO_M = lm(`Corruption (0-100)` ~ Regulatory_quality + Gov_effectiveness + Pol_stability + Accountability+Rule_law+Inequality, data = base_clean)
+summary(MODELO_M)
+```
+
+
+```{r}
+base_cluster = base_clean[,c(2:12)]
+```
+
+
+```{r}
+row.names(base_cluster)=base_clean$Country
+```
+
+
+```{r}
+base_cluster=na.omit(base_cluster)
+```
+
+
+```{r}
+library(BBmisc)
+base_cluster[,c(1:11)]=normalize(base_cluster[,c(1:11)],method='standardize')
+```
+
+```{r}
+library(cluster)
+g.dist = daisy(base_cluster, metric="gower")  # ojo!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+```
+
+CLUSTERIZACIÓN: PAM - NO JERARQUICO {data-icon="fa-table"}
+=====================================
+
+```{r}
+library(factoextra)
+fviz_nbclust(base_cluster, pam,diss=g.dist,method = "gap_stat",k.max = 10,verbose = F)
+```
+
+
+```{r}
+
+library(kableExtra)
+res.pam=pam(g.dist,3,cluster.only = F)
+```
+PAM: AGRUPACIÓN {data-icon="fa-table"}
+=====================================
+
+```{r}
+base_cluster$pam=res.pam$cluster
+```
+
+```{r}
+head(base_cluster,15)%>%kbl()%>%kable_styling()
+```
+
+PAM: GRÁFICO SILHOUETTE {data-icon="fa-table"}
+=====================================
+
+```{r}
+fviz_silhouette(res.pam,print.summary = F)
+```
+
+PAM: CASOS NO CLUSTERIZADOS {data-icon="fa-table"}
+=====================================
+
+```{r}
+silPAM=data.frame(res.pam$silinfo$widths)
+silPAM$country=row.names(silPAM)
+poorPAM=silPAM[silPAM$sil_width<0,'country']%>%sort()
+poorPAM
+```
+PAM: PROMEDIOS {data-icon="fa-table"}
+=====================================
+
+```{r}
+aggregate(.~ pam, data=base_cluster,mean)
+```
+
+
+
+
+AGNES: AGRUPACIÓN {data-icon="fa-table"}
+=====================================
+
+```{r}
+library(factoextra)
+res.agnes<- hcut(g.dist, k = 9,hc_func='agnes',hc_method = "ward.D")
+base_cluster$agnes=res.agnes$cluster
+```
+
+
+
+
+```{r}
+head(base_cluster,15)%>%kbl()%>%kable_styling()
+```
+
+AGNES: DENDOGRAMA {data-icon="fa-table"}
+=====================================
+
+```{r}
+fviz_dend(res.agnes, cex = 0.7, horiz = F,main = "")
+```
+
+AGNES: GRÁFICO SILHOUETTE{data-icon="fa-table"}
+=====================================
+
+
+```{r}
+fviz_silhouette(res.agnes,print.summary = F)
+```
+
+AGNES: CASOS NO CLUSTERIZADOS{data-icon="fa-table"}
+=====================================
+
+
+```{r}
+silAGNES=data.frame(res.agnes$silinfo$widths)
+silAGNES$country=row.names(silAGNES)
+poorAGNES=silAGNES[silAGNES$sil_width<0,'country']%>%sort()
+poorAGNES
+```
+
+AGNES: PROMEDIOS {data-icon="fa-table"}
+=====================================
+
+
+```{r}
+aggregate(.~ agnes, data=base_cluster,mean)
+```
+   
+DIANA: NUMERO DE CLUSTERS {data-icon="fa-table"}
+=====================================
+
+```{r}
+fviz_nbclust(base_cluster, hcut,diss=g.dist,method = "gap_stat",k.max = 10,verbose = F,hc_func = "diana")
+```
+
+DIANA: AGRUPACIÓN {data-icon="fa-table"}
+=====================================
+
+```{r}
+res.diana <- hcut(g.dist, k = 10,hc_func='diana')
+base_cluster$diana=res.diana$cluster
+```
+
+```{r}
+head(base_cluster,15)%>%kbl%>%kable_styling()
+```
+
+DIANA: DENDOGRAMA {data-icon="fa-table"}
+=====================================
+
+
+```{r}
+fviz_dend(res.diana, cex = 0.7, horiz = T, main = "")
+```
+
+DIANA: GRAFICO DE SILHOUETTE {data-icon="fa-table"}
+=====================================
+
+```{r}
+fviz_silhouette(res.diana,print.summary = F)
+```
+
+DIANA: CASOS NO CLUSTERIZADOS {data-icon="fa-table"}
+=====================================
+
+```{r}
+silDIANA=data.frame(res.diana$silinfo$widths)
+silDIANA$country=row.names(silDIANA)
+poorDIANA=silDIANA[silDIANA$sil_width<0,'country']%>%sort()
+poorDIANA
+```
+DIANA: PROMEDIOS {data-icon="fa-table"}
+=====================================
+
+```{r}
+aggregate(.~ diana, data=base_cluster,mean)
+```
+
+
+VISUALIZACIÓN COMPARATIVA: DIMENSIONES {data-icon="fa-table"}
+=====================================
+
+```{r}
+# k es la cantidad de dimensiones
+proyeccion = cmdscale(g.dist, k=2,add = T) 
+head(proyeccion$points,20)
+```
+
+```{r}
+base_cluster$dim1 <- proyeccion$points[,1]
+base_cluster$dim2 <- proyeccion$points[,2]
+```
+
+VISUALIZACIÓN COMPARATIVA: GRAFICO {data-icon="fa-table"}
+=====================================
+
+```{r}
+library(ggrepel)
+base= ggplot(base_cluster,aes(x=dim1, y=dim2,label=row.names(base_cluster)))
+  
+base + geom_text_repel(size=3,aes(color=agnes), max.overlaps = 50,min.segment.length = unit(0, 'lines'))
+
+```
+
+
