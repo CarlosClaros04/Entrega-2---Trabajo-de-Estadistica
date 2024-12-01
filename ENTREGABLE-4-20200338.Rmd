@@ -1,0 +1,699 @@
+---
+title: "INDICE DE PERCEPCIÓN DE LA CORRUPCIÓN: UN ESTUDIO GLOBAL"
+output: 
+  flexdashboard::flex_dashboard:
+    orientation: columns
+    vertical_layout: fill
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+library(flexdashboard) 
+```
+
+
+
+ÍNDICE DE PERCEPCIÓN DE CORRUPCIÓN {data-icon="fa-table"}
+=====================================  
+Column {data-width=500}
+----------------------------------------------------------------------- 
+```{r}
+# Cargar librerías necesarias
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+# Cargar los datos
+library(rio)
+base = import("Data_paises2022_continentes.xlsx")
+```
+
+
+```{r}
+# Filtrar los datos eliminando filas con valores NA en las columnas relevantes
+#base_clean <- base %>%
+#  drop_na(`Corruption (0-100)`, Pol_stability, Gov_effectiveness, Continent)
+
+base_clean=na.omit(base)
+```
+
+
+
+
+```{r}
+hist(base_clean$`Corruption (0-100)`,
+     main = "Histograma del Indice de Corrupcion (IPC)",
+     xlab = "Indice de Corrupcion (0-100)",
+     col = "blue",
+     border = "black")
+```
+    
+
+>INTERPRETACIÓN: El histograma del Índice de Percepción de la Corrupción (IPC) muestra la distribución de países según su puntuación en el índice, que va de 0 a 100, donde 0 representa una corrupción percibida como muy alta y 100 como muy baja. En el eje X se presentan los rangos del IPC, mientras que en el eje Y se muestra la frecuencia, es decir, el número de países en cada rango.
+La mayor concentración de países se encuentra en el rango de 30 a 40 puntos, lo que sugiere que un gran número de naciones percibe niveles significativos de corrupción. Le siguen en frecuencia los países con índices entre 20 y 30, mientras que hay menos países con valores altos del IPC (indicando menor corrupción percibida), especialmente a partir de los 60 puntos en adelante.
+La distribución es asimétrica, sesgada hacia la derecha, ya que la mayoría de los valores están en el extremo inferior (hacia 20), mientras que son pocos los países con índices cercanos a 80. Este análisis refleja que la percepción de corrupción es un problema prevalente a nivel global, afectando a una parte considerable de los países evaluados.
+
+
+
+GRAFICOS VARIABLES INDEPENDIENTES {data-icon="fa-table"}
+=====================================     
+Column {data-width=500} {.tabset}
+-----------------------------------------------------------------------
+
+### IPC vs Desigualdad
+
+```{r}
+# Cargar librerías necesarias
+library(ggplot2)
+
+
+ggplot(base_clean, aes(x = Inequality, y = `Corruption (0-100)`)) +
+  geom_point(size = 3) +
+    geom_smooth(method="lm", se = T, colour="red")+
+  labs(title = "IPC vs Desigualdad",
+       y = "Indice de Percepcion de Corrupcion (CPI)", x = "Desigualdad") +
+  theme_minimal() +
+  scale_color_brewer(palette = "Set1")
+```
+
+>INTERPRETACIÓN: El gráfico presenta la relación entre el Índice de Percepción de la Corrupción (IPC), representado en el eje Y, y la desigualdad, en el eje X. Cada punto negro corresponde a un país, mientras que la línea roja indica la tendencia general de esta relación mediante una regresión lineal. El área gris alrededor de la línea roja representa el intervalo de confianza, lo que refleja la variabilidad esperada en la estimación de la tendencia.
+La relación entre estas dos variables es claramente negativa. Esto significa que, a medida que la desigualdad aumenta (valores más altos en el eje X), el IPC tiende a disminuir, lo cual indica que los países con mayores niveles de desigualdad perciben mayores niveles de corrupción. Esta tendencia es coherente con investigaciones que han señalado que las sociedades más desiguales suelen enfrentar desafíos institucionales, lo que puede incrementar la percepción de corrupción.
+
+
+### IPC vs Estado de Derecho
+
+```{r}
+# Crear gráfico de dispersión entre desigualdad y estabilidad política
+ggplot(base, aes(x = `Corruption (0-100)`, y = Rule_law)) +
+  geom_point(size = 3) +
+  labs(
+    title = "IPC vs Estado de Derecho",
+    x = " Indice de Percepcion de Corrupcion (IPC)",
+    y = "Estado de Derecho"
+  ) +
+  theme_minimal() +
+  scale_color_brewer(palette = "Set1")
+```
+
+>INTERPRETACIÓN:La relación entre estas dos variables es claramente positiva. A medida que el IPC aumenta (mayor transparencia y menor corrupción percibida), también lo hace el indicador del Estado de Derecho. Esto sugiere que los países con instituciones fuertes, sistemas legales robustos y un mayor respeto por el estado de derecho tienden a tener niveles más bajos de corrupción percibida. Esto es consistente con investigaciones que destacan la importancia de instituciones sólidas para la transparencia y la lucha contra la corrupción.
+Además, la dispersión de los puntos es menor en comparación con otros gráficos, lo que indica una correlación más estrecha entre el IPC y el Estado de Derecho. Sin embargo, hay algunos puntos fuera de la tendencia general, lo que sugiere que algunos países pueden tener un Estado de Derecho relativamente alto pero aún enfrentar desafíos en la percepción de corrupción, o viceversa.
+
+
+
+### IPC vs Voz y Rendición de Cuentas
+```{r}
+# Crear gráfico de dispersión entre desigualdad y estabilidad política
+ggplot(base, aes(x = `Corruption (0-100)`, y = Accountability)) +
+  geom_point(size = 3) +
+  labs(
+    title = "IPC vs Voz y Rendicion de Cuentas",
+    x = "Indice de Percepcion de Corrupcion (IPC",
+    y = "Voz y Rendicion de Cuentas (Accountability)"
+  ) +
+  theme_minimal() +
+  scale_color_brewer(palette = "Set1")
+```
+
+>INTERPRETACIÓN: Se observa una correlación positiva clara, lo que implica que a medida que el IPC aumenta (es decir, la percepción de corrupción disminuye), también se incrementan los niveles de voz y rendición de cuentas. Esto sugiere que los países donde la corrupción es percibida como más baja tienden a tener sistemas más sólidos de participación ciudadana y mayor accountability.
+Los datos muestran que en países con bajos valores del IPC, donde la corrupción es percibida como alta, los niveles de rendición de cuentas tienden a ser igualmente bajos, concentrándose en rangos de 0 a 25 en el eje Y. Por otro lado, en los países con IPC más altos, que representan contextos de menor corrupción percibida, los valores de accountability incrementan significativamente, alcanzando niveles cercanos a 100. Esto refuerza la idea de que la rendición de cuentas y la transparencia están estrechamente relacionadas con la percepción de integridad en la gestión pública.
+Además, en el gráfico es posible identificar patrones extremos. En la parte superior derecha aparecen países con altos niveles de IPC y accountability, lo que sugiere contextos de buena gobernanza con baja corrupción y alta participación ciudadana. En contraste, en la parte inferior izquierda, se agrupan países con altos niveles de corrupción percibida y deficientes sistemas de rendición de cuentas. Estos puntos extremos permiten distinguir diferentes modelos de gobernanza y los desafíos que enfrentan ciertos países para mejorar en ambos indicadores.
+
+
+
+### IPC vs Voz y Estabilidad Politica
+
+```{r}
+# Crear gráfico de dispersión entre desigualdad y estabilidad política
+ggplot(base, aes(x = `Corruption (0-100)`, y = Pol_stability)) +
+  geom_point(size = 3) +
+  labs(
+    title = "IPC vs Estabilidad Politica",
+    x = "Indice de Percepcion de Corrupcion (IPC",
+    y = "Estabilidad Politica (Pol_stability)"
+  ) +
+  theme_minimal() +
+  scale_color_brewer(palette = "Set1")
+```
+
+>INTERPRETACIÓN: Se observa nuevamente una correlación positiva, donde los países con un IPC más alto, que indica menor percepción de corrupción, tienden a registrar mayores niveles de estabilidad política. Esto sugiere que la percepción de corrupción puede tener un impacto significativo en la capacidad de un país para mantener un entorno político estable.
+En los países con bajos niveles de IPC, que representan contextos de alta percepción de corrupción, los valores de estabilidad política tienden a concentrarse en los niveles más bajos del eje Y (entre 0 y 25). Esto sugiere que la corrupción puede ser un factor desestabilizador para los sistemas políticos, posiblemente al erosionar la confianza en las instituciones y fomentar conflictos internos. Por otro lado, los países con IPC más altos, donde la corrupción percibida es menor, muestran mayores valores de estabilidad política, acercándose a los niveles de 75 o más, lo que indica que un entorno transparente y libre de corrupción puede ser propicio para la estabilidad política.
+El gráfico también evidencia una dispersión menor en los niveles altos de IPC y estabilidad política, lo que sugiere que, aunque la relación es positiva, no es lineal ni absoluta. Esto indica que la estabilidad política depende de otros factores adicionales, como la fortaleza institucional, la cohesión social o el entorno económico, que podrían complementar el impacto de la percepción de corrupción.
+
+
+### IPC vs Calidad de los Organismos Reguladores
+
+```{r}
+# Crear gráfico de dispersión entre desigualdad y estabilidad política
+ggplot(base, aes(x = `Corruption (0-100)`, y =Regulatory_quality)) +
+  geom_point(size = 3) +
+  labs(
+    title = "IPC vs Calidad de los Organismos Reguladores",
+    x = "Indice de Percepcion de Corrupcion (IPC",
+    y = "Calidad de los Organismos reguladores (Regulatory_quality)"
+  ) +
+  theme_minimal() +
+  scale_color_brewer(palette = "Set1")
+```
+
+>INTERPRETACIÓN:Se identifica una correlación positiva significativa, donde los países con un mayor IPC, lo que implica menor percepción de corrupción, tienden a tener organismos reguladores de mejor calidad. Este vínculo refuerza la idea de que la fortaleza y eficiencia de los sistemas regulatorios están estrechamente asociadas con niveles más bajos de corrupción percibida.
+En los países con un IPC bajo, que representan contextos de alta corrupción percibida, la calidad de los organismos reguladores se encuentra en rangos bajos, predominantemente entre 0 y 25 en el eje Y. Esto sugiere que altos niveles de corrupción están vinculados con sistemas regulatorios débiles, posiblemente ineficaces o capturados por intereses particulares. En contraste, los países con un IPC más alto, reflejando menor corrupción percibida, presentan un aumento progresivo en la calidad regulatoria, alcanzando niveles cercanos a 100 en algunos casos.
+El patrón observado indica una relación directa entre la capacidad regulatoria y la percepción de integridad institucional. Sin embargo, también se nota una leve dispersión en los valores más altos del IPC, lo que indica que aunque en general la calidad regulatoria es superior en países con baja corrupción, existen variaciones que pueden deberse a diferencias en políticas públicas, prioridades nacionales o contextos económicos específicos.
+
+
+### IPC vs Eficiencia del Gobierno
+
+```{r}
+ggplot(base_clean, aes(x = Gov_effectiveness , y = `Corruption (0-100)`)) +
+  geom_point() +
+  geom_smooth(method="lm", se = T, colour="red")+
+  labs(title = "IPC vs Eficiencia del Gobierno",
+       x = "Indice de Percepcion de Corrupcion (IPC", y = "Eficiencia del Gobierno") +
+  theme_minimal() +
+  scale_color_brewer(palette = "Set1")
+```
+
+>INTERPRETACIÓN:Se identifica una correlación positiva lineal bien marcada, representada visualmente por la línea roja de tendencia. Esto indica que los países con un IPC más alto, que refleja una menor percepción de corrupción, tienden a tener gobiernos más eficientes en términos de gestión y ejecución de políticas públicas.
+En países con un IPC bajo, donde la percepción de corrupción es alta, la eficiencia gubernamental se concentra en valores bajos, predominantemente entre 0 y 25 en el eje Y. Esto sugiere que altos niveles de corrupción están asociados con una deficiente capacidad gubernamental para administrar recursos, implementar políticas efectivas y garantizar servicios públicos de calidad. Por el contrario, en los países con un IPC alto, que refleja contextos de menor corrupción percibida, la eficiencia del gobierno aumenta considerablemente, alcanzando valores cercanos a 100. Esto refuerza la idea de que la transparencia y la integridad institucional son factores clave para lograr un gobierno más eficaz.
+La inclusión de la línea de tendencia resalta la consistencia de esta relación positiva, aunque también se observa cierta dispersión, especialmente en los valores más altos del IPC. Esto sugiere que, aunque la percepción de corrupción es un factor relevante, la eficiencia gubernamental también depende de otros elementos, como el nivel de desarrollo económico, la estabilidad política y la fortaleza institucional.
+
+
+CORRELACIONES {data-icon="fa-table"}
+=====================================     
+Column {data-width=500} {.tabset}
+-----------------------------------------------------------------------
+
+```{r}
+cor.test(base_clean$Regulatory_quality,base_clean$`Corruption (0-100)`)
+
+# Ho r = o      (no correlacion)
+# H1 r =/= 0    (si correlacion)  ->  analizar coeficiente
+cor.test(base_clean$Inequality,base_clean$`Corruption (0-100)`)
+
+# Ho r = o      (no correlacion)
+# H1 r =/= 0    (si correlacion)  ->  analizar coeficiente
+cor.test(base_clean$Rule_law,base_clean$`Corruption (0-100)`)
+
+cor.test(base_clean$Gov_effectiveness,base_clean$`Corruption (0-100)`, method = c("spearman"))
+
+cor.test(base_clean$`Corruption (0-100)`,base_clean$Gov_effectiveness) # pearson
+```
+
+
+REGRESIÓN ANIDADA {data-icon="fa-table"}
+=====================================     
+Column {data-width=500} {.tabset}
+-----------------------------------------------------------------------
+
+### MODELO
+
+```{r}
+library(modelsummary)
+library(kableExtra)
+
+modelo1 = lm(`Corruption (0-100)` ~ Accountability + Gov_effectiveness  , data = base_clean)
+
+
+
+modelo2 = lm(`Corruption (0-100)` ~ Accountability + Gov_effectiveness + Rule_law , data = base_clean)
+
+modelo3 = lm(`Corruption (0-100)` ~ Accountability + Gov_effectiveness + Rule_law + Pol_stability , data = base_clean)
+
+
+
+models=list('Corrupcion (I)'=modelo1,
+            'Corrupcion (II)'=modelo2,
+            'Corrupcion (III)'=modelo3)
+modelsummary(models, title = "Resultados de todos los modelos",
+             stars = TRUE,
+             output = "kableExtra")
+```
+
+>INTERPRETACIÓN: La rendición de cuentas (Accountability) tiene un impacto positivo y significativo en los tres modelos. A medida que se incluyen más variables en los modelos, su coeficiente disminuye ligeramente de 0.182 a 0.097, pero sigue siendo relevante (p < 0.05). Esto indica que la rendición de cuentas contribuye a mejorar la percepción de integridad institucional, aunque su efecto puede estar parcialmente explicado por otras dimensiones de la gobernanza.
+La eficiencia del gobierno (Gov_effectiveness) destaca como la variable más influyente. En todos los modelos, su coeficiente es altamente significativo (p < 0.001) y muestra un efecto considerable, especialmente en el primer modelo, donde alcanza 0.460. Esto sugiere que gobiernos más eficientes, capaces de gestionar recursos y ejecutar políticas públicas de manera efectiva, están estrechamente vinculados con una percepción más baja de corrupción. Aunque su impacto disminuye ligeramente en los modelos más complejos (0.254 en el tercer modelo), sigue siendo un factor determinante.
+El estado de derecho (Rule_law) también tiene un impacto positivo y significativo (p < 0.001) en todos los modelos. Su coeficiente varía ligeramente entre 0.244 y 0.228, lo que muestra su consistencia como predictor del IPC. Esto refuerza la idea de que sistemas legales sólidos y aplicados de manera justa son esenciales para reducir la percepción de corrupción.
+La estabilidad política (Pol_stability) se introduce únicamente en el tercer modelo y presenta un coeficiente de 0.090, significativo al nivel de p < 0.05. Aunque su impacto es menor en comparación con las otras variables, su inclusión mejora el ajuste del modelo, mostrando que contextos políticos más estables también contribuyen a reducir la percepción de corrupción.
+En términos de desempeño del modelo, el tercer modelo muestra el mejor ajuste. Esto se evidencia en los valores más altos de R² (0.885) y R² ajustado (0.882), así como en los valores más bajos de AIC (1022.5) y BIC (1040.8). Además, la disminución del RMSE de 6.88 en el primer modelo a 6.30 en el tercero indica una mayor precisión en la predicción del IPC.
+
+
+### ANOVA
+
+
+```{r}
+library(magrittr)
+library(knitr)
+tanova=anova(modelo1 , modelo2 , modelo3) 
+
+kable(tanova,
+      caption = "Tabla ANOVA para comparar modelos")%>%kableExtra::kable_styling(full_width = FALSE)
+```
+
+>INTERPRETACIÓN: La tabla ANOVA demuestra que añadir variables explicativas al modelo mejora significativamente su capacidad para predecir el IPC. La mayor mejora ocurre al incluir la primera variable (con un gran cambio en RSS y un F alto), mientras que las siguientes variables también aportan, pero su efecto es más reducido. Esto sugiere que las primeras variables incluidas tienen un impacto más fuerte y directo sobre el IPC, mientras que las siguientes añaden valor pero en menor medida. En conjunto, estos resultados validan la importancia de las variables adicionales para construir un modelo robusto que explique las variaciones en la percepción de corrupción.
+
+Supuestos Modelo 3 {data-icon="fa-table"}
+=====================================     
+Column {data-width=500} {.tabset}
+-----------------------------------------------------------------------
+
+### Linealidad
+
+
+```{r}
+# linelisS
+# linea roja debe tender a horizontal
+plot(modelo3, 1)
+```
+
+>INTERPRETACIÓN: El gráfico de residuos versus valores ajustados muestra que los residuos están distribuidos de manera relativamente uniforme alrededor de la línea roja suavizada, lo que sugiere que el supuesto de linealidad está razonablemente cumplido. No se observan patrones curvilíneos claros o tendencias sistemáticas en los residuos que indiquen una relación no lineal entre las variables independientes y la dependiente. Esto implica que el modelo captura adecuadamente la relación general esperada entre las variables incluidas.
+Sin embargo, hay ligeras desviaciones hacia los extremos del gráfico, donde la línea roja se curva ligeramente. Aunque estas desviaciones son sutiles, podrían sugerir una leve falta de linealidad en estos rangos específicos de los valores ajustados. Esto no parece afectar significativamente el modelo en su conjunto, pero podría ser útil realizar pruebas adicionales o considerar transformaciones de las variables si se busca optimizar completamente el ajuste lineal.
+
+
+### Homecedasticidad
+
+```{r}
+#Homocedasticidad
+# linea roja debe tender a horizontal
+plot(modelo3, 3)
+```
+
+### Homecedasticidad-BrushPagan
+
+```{r}
+
+# Homecedasticidad
+
+# Ho Homecedasticidad  esto se desea
+# H1 No Homecedasticidad
+library(lmtest)
+library(kableExtra)
+# null: modelo homocedastico
+resBP=bptest(modelo3)
+data.frame(list('BP'=resBP$statistic,
+             'df'=resBP$parameter,
+             "p-value"=resBP$p.value))%>%
+    kable(caption = resBP$method)%>%kable_styling(full_width = F)
+```
+
+>INTERPRETACIÓN:En general, los puntos parecen estar distribuidos de manera razonablemente uniforme, aunque se observa una ligera tendencia ascendente en la línea roja a medida que aumentan los valores ajustados. Esto sugiere que podría haber una leve heterocedasticidad, especialmente en los valores ajustados más altos. Además, algunos puntos atípicos (identificados como 16, 113 y 130) podrían estar afectando la homogeneidad de la varianza.
+El valor de p asociado a la prueba de Breusch-Pagan (p = 0.035) es significativo, lo que confirma la presencia de heterocedasticidad en el modelo. Esto indica que la varianza de los residuos no es completamente constante y que podrían ser necesarias transformaciones en las variables o el uso de técnicas robustas para corregir este problema y garantizar la validez de las inferencias del modelo.
+
+### Normalidad de los residuos
+
+```{r}
+# Normalidad de los residuos
+# puntos cerca a la diagonal?
+plot(modelo3, 2)
+```
+
+### Normalidad de residuos-Shapiro test
+
+```{r}
+
+# normalidad resiudal
+# Ho normalidad residual  ESTO SE DESA
+# H1 no normalidad residual
+#NULL: Datos se distribuyen de manera normal
+resSW=shapiro.test(modelo3$residuals)
+data.frame(list('SW'=resSW$statistic,
+             "p-value"=resSW$p.value))%>%
+    kable(caption = resSW$method)%>%kable_styling(full_width = F)
+```
+
+>INTERPRETACIÓN: En este caso, los puntos se distribuyen principalmente a lo largo de la línea diagonal, lo que sugiere que los residuos cumplen razonablemente con el supuesto de normalidad. Sin embargo, se observan algunas desviaciones en los extremos, donde los puntos se alejan de la línea, indicando la presencia de valores atípicos. En particular, el punto identificado como "16" destaca como un valor extremo en el lado derecho del gráfico, lo que podría influir en el ajuste del modelo.
+La prueba de normalidad Shapiro-Wilk muestra un valor W de 0.939 y un p-valor de 0.772, lo que indica que no hay evidencia suficiente para rechazar la hipótesis nula de normalidad de los residuos. Por lo tanto, aunque hay algunas desviaciones menores en los extremos, el modelo parece cumplir con el supuesto de normalidad en términos generales. Sin embargo, sería útil investigar los valores atípicos para garantizar que no afecten significativamente los resultados del modelo.
+
+
+
+### No multicolinelidad
+
+
+```{r}
+# No multicolinelidad
+# multicolinelidad ES LA RELACION ENTRE LAS x INDEPEDIENTES
+library(DescTools)
+# > 5 es problematico
+VIF(modelo3) %>%kable(col.names = "VIF",caption ="Evaluando Multicolinealidad usando VIF (Variance Inflation Factors)" )%>%kable_styling(full_width = F)
+```
+
+>INTERPRETACIÓN: El análisis de los factores de inflación de la varianza (VIF) muestra que, en general, el modelo no presenta problemas graves de multicolinealidad. Las variables Accountability y Pol_stability tienen valores de VIF bajos (2.94 y 2.88, respectivamente), indicando que no están altamente correlacionadas con otras variables del modelo. Por otro lado, Gov_effectiveness y Rule_law presentan valores de VIF de 7.14 y 8.29, lo que sugiere una multicolinealidad moderada, aunque no llega al nivel crítico de 10 que indicaría un problema severo.
+
+### Valores influyentes
+
+
+```{r}
+#Valores influyentes
+plot(modelo3, 5)
+```
+
+### Valore influyentes criticos
+
+```{r}
+library(dplyr)
+library(kableExtra)
+checkReg2=as.data.frame(influence.measures(modelo3)$is.inf)
+checkReg2[checkReg2$cook.d & checkReg2$hat,c('cook.d','hat')]%>%kable(caption = "Valores Influyentes criticos")%>%kable_styling(full_width = F)
+```
+
+>INTERPRETACIÓN: En este gráfico, la mayoría de las observaciones se agrupan cerca del origen, con bajos valores de leverage y residuos estandarizados cercanos a cero. Sin embargo, destacan algunos puntos, como el 158, 113 y 111, que tienen valores más altos de leverage o residuos significativos. Estos puntos podrían tener un impacto desproporcionado en el ajuste del modelo y, por lo tanto, deberían ser investigados más a fondo para determinar si representan datos atípicos, errores de medición o características únicas que justifican su inclusión.
+En general, aunque hay algunas observaciones influyentes, la mayoría de los puntos están distribuidos de manera uniforme y no exceden los límites críticos de la distancia de Cook. Esto sugiere que el modelo es relativamente robusto, pero es importante evaluar el impacto de estos puntos influyentes y considerar su exclusión o tratamiento para garantizar que no estén sesgando los resultados.
+
+
+MODELACIÓN CLUSTER {data-icon="fa-table"}
+=====================================     
+Column {data-width=500} {.tabset}
+-----------------------------------------------------------------------
+
+
+
+```{r include=FALSE}
+base_cluster = base_clean[,c(2:12)]
+```
+
+
+```{r include=FALSE}
+row.names(base_cluster)=base_clean$Country
+```
+
+
+```{r include=FALSE}
+base_cluster=na.omit(base_cluster)
+```
+
+
+```{r include=FALSE}
+library(BBmisc)
+base_cluster[,c(1:11)]=normalize(base_cluster[,c(1:11)],method='standardize')
+```
+
+```{r include=FALSE}
+library(cluster)
+g.dist = daisy(base_cluster, metric="gower")  # ojo!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+```
+
+### CLUSTERIZACIÓN: PAM - NO JERARQUICO 
+
+```{r}
+library(factoextra)
+fviz_nbclust(base_cluster, pam,diss=g.dist,method = "gap_stat",k.max = 10,verbose = F)
+```
+
+
+```{r}
+
+library(kableExtra)
+res.pam=pam(g.dist,3,cluster.only = F)
+```
+
+
+```{r include=FALSE}
+#PAM: AGRUPACIÓN 
+base_cluster$pam=res.pam$cluster
+```
+
+```{r include=FALSE}
+head(base_cluster,15)%>%kbl()%>%kable_styling()
+```
+
+### PAM: GRÁFICO SILHOUETTE
+
+```{r}
+fviz_silhouette(res.pam,print.summary = F)
+```
+
+>INTERPRETACIÓN: El cluster 1 (rojo) tiene varias observaciones con valores bajos e incluso negativos, indicando que algunas observaciones podrían estar asignadas incorrectamente o no pertenecen claramente a este grupo. El cluster 2 (verde) y el cluster 3 (azul) tienen mayor homogeneidad, con valores más altos de silueta, aunque también presentan algunas observaciones con valores bajos. En general, aunque los clusters están definidos, la calidad del agrupamiento podría mejorar refinando los criterios de asignación o explorando un número diferente de clusters.
+
+### PAM: CASOS NO CLUSTERIZADOS 
+
+
+```{r}
+silPAM=data.frame(res.pam$silinfo$widths)
+silPAM$country=row.names(silPAM)
+poorPAM=silPAM[silPAM$sil_width<0,'country']%>%sort()
+poorPAM
+```
+
+### PAM: PROMEDIOS 
+
+
+```{r}
+aggregate(.~ pam, data=base_cluster,mean)
+```
+
+>INTERPRETACIÓN: El cluster 1 muestra valores promedio negativos en la mayoría de las variables, lo que sugiere que agrupa a países con bajos niveles de gobernanza (Accountability, Pol_stability y Gov_effectiveness) y desarrollo humano en comparación con los otros clusters. En contraste, el cluster 3 presenta los valores promedio más altos en todas las dimensiones, indicando que incluye a países con altos niveles de gobernanza, calidad regulatoria y desarrollo humano. Por su parte, el cluster 2 se encuentra en una posición intermedia, con valores negativos en algunas variables (como calidad regulatoria y GNI per capita), pero cercanos al promedio en otras, lo que refleja una heterogeneidad relativa en este grupo.
+En términos de interpretación, los clusters reflejan diferentes niveles de desarrollo y calidad institucional. El cluster 3 puede asociarse con países desarrollados y con mejor desempeño institucional, mientras que el cluster 1 probablemente representa a países con mayores desafíos en gobernanza y desarrollo. El cluster 2 podría incluir a países en vías de desarrollo con características mixtas. Estos resultados ofrecen una base para el análisis comparativo entre grupos y la formulación de estrategias específicas para mejorar las condiciones en países que pertenecen a clusters menos favorables.
+
+
+### Jerarquico  agnes
+
+```{r}
+baseagnes=base_cluster[,-c(12)]
+```
+
+
+```{r}
+## PARA JERARQUICO agnes
+
+fviz_nbclust(baseagnes, hcut,diss=g.dist,method = "gap_stat",k.max = 10,verbose = F,hc_func = "agnes")
+```
+
+
+```{r include=FALSE}
+library(factoextra)
+res.agnes<- hcut(g.dist, k = 9,hc_func='agnes',hc_method = "ward.D")
+base_cluster$agnes=res.agnes$cluster
+```
+
+
+```{r include=FALSE}
+head(base_cluster,15)%>%kbl()%>%kable_styling()
+```
+
+
+
+### AGNES: GRÁFICO SILHOUETTE
+
+
+```{r}
+fviz_silhouette(res.agnes,print.summary = F)
+```
+
+>INTERPRETACIÓN: Clusters como el 1, 2 y 9 incluyen varias observaciones con valores negativos, lo que sugiere una mala asignación en estas agrupaciones. Esto implica que la división en 9 clusters podría no ser óptima, y se recomienda explorar un número menor de clusters para mejorar la calidad del modelo y la coherencia de las asignaciones.
+
+
+### AGNES: CASOS NO CLUSTERIZADOS
+
+```{r}
+silAGNES=data.frame(res.agnes$silinfo$widths)
+silAGNES$country=row.names(silAGNES)
+poorAGNES=silAGNES[silAGNES$sil_width<0,'country']%>%sort()
+poorAGNES
+```
+
+
+### Jerarquico diana
+
+```{r}
+basediana=base_cluster[,-c(12,13)]
+```
+
+
+```{r}
+## PARA JERARQUICO
+
+fviz_nbclust(basediana, hcut,diss=g.dist,method = "gap_stat",k.max = 10,verbose = F,hc_func = "diana")
+```
+
+```{r include=FALSE}
+#DIANA: AGRUPACIÓN 
+res.diana <- hcut(g.dist, k = 5,hc_func='diana')
+base_cluster$diana=res.diana$cluster
+```
+
+```{r include=FALSE}
+head(base_cluster,15)%>%kbl%>%kable_styling()
+```
+
+
+### DIANA: GRAFICO DE SILHOUETTE 
+
+```{r}
+fviz_silhouette(res.diana,print.summary = F)
+```
+
+>INTERPRETACIÓN: Un valor promedio de silueta de 0.24 indica que el agrupamiento es débil en general, ya que valores por debajo de 0.5 sugieren que muchas observaciones no están claramente asignadas a un cluster específico. Algunos clusters, como el 4 (azul), muestran valores de SiS_iSi. consistentemente más altos, indicando una mejor cohesión interna. En contraste, clusters como el 1 (rojo) y el 2 (amarillo) tienen observaciones con valores bajos o negativos de SiS_iSi, lo que indica mala asignación o solapamiento entre clusters.
+Este resultado sugiere que el modelo con 5 clusters no representa de manera óptima las relaciones entre las observaciones, ya que hay una alta proporción de datos que no están claramente agrupados.
+
+
+### DIANA: CASOS NO CLUSTERIZADOS 
+
+```{r}
+silDIANA=data.frame(res.diana$silinfo$widths)
+silDIANA$country=row.names(silDIANA)
+poorDIANA=silDIANA[silDIANA$sil_width<0,'country']%>%sort()
+poorDIANA
+```
+
+
+
+ANÁLISIS FACTORIAL {data-icon="fa-table"}
+=====================================     
+Column {data-width=500} {.tabset}
+-----------------------------------------------------------------------
+
+
+
+
+```{r include=FALSE}
+names(base_clean)
+```
+
+```{r include=FALSE}
+base_factorial = base_clean[,-c(1,2,13)]
+names(base_factorial)
+```
+
+
+```{r include=FALSE}
+# usaremos:
+library(magrittr)
+head(base_factorial,10)%>%
+    rmarkdown::paged_table()
+```
+
+### Correlaciones entre variables:
+
+
+```{r}
+library(polycor)
+## Warning: package 'polycor' was built under R version 4.3.3
+
+corMatrix=polycor::hetcor(base_factorial)$correlations
+# El objeto corMatrix guarda las correlaciones entre todas las variables:
+
+
+
+round(corMatrix,2)
+```
+
+### Matriz de Correlación
+
+```{r}
+
+library(ggcorrplot)
+
+ggcorrplot(corMatrix)
+```
+
+>INTERPRETACIÓN: El gráfico de matriz de correlación presenta la relación entre diversas variables clave como desigualdad, estado de derecho, calidad regulatoria, estabilidad política y eficiencia gubernamental. Las tonalidades de rojo indican correlaciones positivas fuertes, mientras que las tonalidades de azul reflejan correlaciones negativas. Entre los hallazgos principales, destaca una correlación positiva significativa entre la calidad regulatoria (Regulatory_quality) y la eficacia gubernamental (Gov_effectiveness), lo que sugiere que los países con gobiernos más eficientes tienden a tener sistemas regulatorios más sólidos. Asimismo, se observa una relación positiva entre el estado de derecho (Rule_law) y la calidad regulatoria, reforzando la idea de que instituciones legales fuertes son fundamentales para una mejor gobernanza. Estas interacciones reflejan una sinergia en el fortalecimiento institucional.
+En contraste, se identifican correlaciones negativas entre la desigualdad (Inequality) y variables como el estado de derecho y la eficacia gubernamental. Esto implica que las sociedades más desiguales tienden a enfrentar mayores desafíos institucionales, incluyendo una menor efectividad gubernamental y menor fortaleza del estado de derecho. Estas relaciones negativas subrayan el impacto de las disparidades sociales en la capacidad institucional y la gobernanza. En general, el análisis confirma que la interacción entre estas variables es compleja y que los esfuerzos por mejorar la gobernanza deben abordar tanto las dimensiones institucionales como las socioeconómicas de manera integral.
+
+
+### Verificación para factorizar
+
+
+
+
+```{r}
+library(psych)
+psych::KMO(corMatrix) 
+```
+
+El resultado FALSE indica que no se acepta la hipótesis nula, lo que implica que hay correlaciones significativas entre las variables. Este es un requisito necesario para realizar un análisis factorial exploratorio (EFA).
+
+```{r}
+cortest.bartlett(corMatrix,n=nrow(base_factorial))$p.value>0.05
+```
+
+La matriz de correlación es una matriz singular.
+
+```{r}
+library(matrixcalc)
+
+is.singular.matrix(corMatrix)
+```
+
+
+
+
+```{r include=FALSE}
+fa.parallel(base_factorial, fa = 'fa',correct = T,plot = F)
+```
+
+### Analisis de Variables
+
+```{r}
+library(GPArotation)
+resfa <- fa(base_factorial,
+            nfactors = 1,
+            cor = 'mixed',
+            rotate = "varimax", #oblimin?
+            fm="minres")
+print(resfa$loadings)
+```
+
+### RESULTADOS EFA
+
+```{r}
+fa.diagram(resfa,main = "Resultados del EFA")
+```
+
+>INTERPRETACIÓN:El gráfico presentado muestra los resultados del análisis factorial exploratorio (EFA) con un modelo de un solo factor (MR1), indicando la carga factorial de cada variable en relación con dicho factor latente. Las variables consideradas, como la eficacia gubernamental (Gov_effectiveness), la calidad regulatoria (Regulatory_quality) y el estado de derecho (Rule_law), muestran cargas altas y positivas cercanas a 0.9, lo que sugiere que están fuertemente asociadas con el factor común. Este patrón refuerza la idea de que estas dimensiones comparten una base subyacente, posiblemente relacionada con la calidad institucional y la gobernanza efectiva.
+Por otro lado, variables como la desigualdad (Inequality) presentan una carga negativa (-0.5), indicando que tienen una relación inversa con el factor principal, mientras que otras variables socioeconómicas, como los años esperados de escolaridad y el ingreso per cápita, también muestran una contribución significativa al factor común con cargas superiores a 0.8. Este análisis destaca que el factor identificado (MR1) representa un constructo que agrupa tanto aspectos institucionales como socioeconómicos, siendo crucial para entender cómo estas dimensiones interrelacionan en el contexto de gobernanza y desarrollo.
+
+
+
+
+```{r include=FALSE}
+sort(resfa$communality)
+```
+
+
+
+```{r include=FALSE}
+as.data.frame(resfa$scores)%>%head()
+```
+
+```{r include=FALSE}
+base_clean$corrupcion_efa=resfa$scores[,1]
+```
+
+
+
+```{r include=FALSE}
+library(BBmisc)
+## Warning: package 'BBmisc' was built under R version 4.3.3
+
+corrupcion_scores_norm=normalize(resfa$scores, 
+                       method = "range", 
+                       margin=2, # by column
+                       range = c(1, 100))
+
+# nuevas variables
+
+
+base_clean$corrupcion_efa_norm=corrupcion_scores_norm[,1]
+```
+
+
+
+
+### RELACIÓN DIRECTA ENTRE CPI ORIGINAL Y CPI FACTORIAL
+
+
+```{r}
+ggplot(data=base_clean,aes(x=`Corruption (0-100)`,y=corrupcion_efa_norm)) + geom_point() + theme_minimal() + labs(x="Indice de corrupcion (original)", y="Indice de corrupcion EFA")
+```
+
+>INTERPRETACIÓN:El gráfico presenta la relación directa entre el Índice de Percepción de Corrupción (IPC) original y el IPC obtenido a partir del análisis factorial exploratorio (EFA). Cada punto en el gráfico representa un país, mostrando cómo ambos indicadores están altamente correlacionados. La tendencia positiva es clara, ya que los valores altos en el IPC original tienden a corresponder con valores altos en el IPC factorial, lo que indica consistencia entre las mediciones originales y las derivadas del análisis factorial.
+La línea de dispersión evidencia que las puntuaciones del IPC factorial capturan de manera efectiva las variaciones reflejadas en el índice original. Esto valida la robustez del modelo factorial en la síntesis de las dimensiones subyacentes al IPC, demostrando que las características incluidas en el análisis contribuyen significativamente a explicar las percepciones de corrupción en los diferentes contextos nacionales. Este hallazgo subraya la relevancia del análisis factorial como herramienta para simplificar y reforzar la comprensión de los factores clave asociados a la percepción de corrupción.
+
+### CORRELACIÓN CPI ORIGINAL Y CPI FACTORIAL
+
+```{r}
+cor.test(base_clean$`Corruption (0-100)`,base_clean$corrupcion_efa_norm)
+```
+
+>INTERPRETACIÓN:
+La correlación entre el Índice de Percepción de Corrupción (IPC) original y el IPC derivado del análisis factorial exploratorio (EFA) es de 0.929, indicando una relación positiva muy fuerte y significativa (p < 0.001). Este resultado confirma la consistencia entre ambas métricas, validando que el análisis factorial logra captar de manera robusta las dimensiones subyacentes al IPC original, reforzando la fiabilidad del modelo empleado.
+
+
+
